@@ -2,16 +2,23 @@ from paramiko import SSHClient, AutoAddPolicy
 import getpass
 
 def ssh():
-    # Ask user for the file path to their known_hosts file
-    key_path = input("Please enter the full path to your SSH known hosts file: ")
+    # User provides full file path to known hosts file
+    try:
+        key_path = input("Please enter the full path to your SSH known hosts file: ")
+        
+        # Launch SSH Client
+        client = SSHClient()
+        
+        # Attempts to use the file path provided by the user
+        client.load_host_keys(key_path)
+        client.load_system_host_keys
+        client.set_missing_host_key_policy(AutoAddPolicy())
+    except:
+        # File path provided is invalid
+        print("\nError: Could not find known hosts file. Please provide full file path...")  
 
-    client = SSHClient()
-
-    # Uses the file path provided by the user
-    client.load_host_keys(key_path)
-    client.load_system_host_keys
-    client.set_missing_host_key_policy(AutoAddPolicy())
-
+        # Restart function
+        ssh()
 
     ip = input("Please enter the IPv4 address of the endpoint: ")
     username = input("Please enter the username for the endpoint: ")
@@ -40,6 +47,7 @@ def ssh():
     # Prints the return code from the command
     return_code = (f'Return code: {stdout.channel.recv_exit_status()}')
 
+    # Error handling for invalid command syntax
     """
     if return_code != 0:
     print("The command you provided is invalid. Check the syntax.")
@@ -52,5 +60,5 @@ def ssh():
     # Close the SSH session 
     client.close()
 
-# Call main SSH function
+# Call function
 ssh()
