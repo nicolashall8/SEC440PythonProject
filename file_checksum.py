@@ -1,12 +1,12 @@
 import hashlib
-from time import sleep
+import time
 
 def hash_menu():
 
     hash_options = {
         1: 'SHA-256',
         2: 'MD5',
-        3: 'Return to main menu',
+        3: 'Exit Program',
     }
     for key in hash_options.keys():
         print(key, '-', hash_options[key])
@@ -15,16 +15,28 @@ def sha_hash():
    
     try:
         filepath = input("Please enter the full path to your file: ")
-        
+        verified_sha = input("\nPlease paste the verified hash included on the website of the downloaded file: ").lower()
+
         hasher = hashlib.sha256()
         with open(filepath,"rb") as open_file:
             content = open_file.read()
             hasher.update(content)
         sha_output = hasher.hexdigest()
-        print("\n" + sha_output)
+        print("\nThe hash of the provided file is: " + sha_output.lower())
+
+        if verified_sha == sha_output:
+            print("\nCongratulations, the hash of the file is legitimate.\n")
+        else:
+            print("\nThe hash of the file is not legitimate. Please take the necessary steps to dispose of this file as it may be malicious.\n")
 
         # Close the file
         open_file.close()
+
+        # Return to main menu
+        time.sleep(2)
+        print("Returning to main menu...")
+        time.sleep(2)
+        hash_menu()
     
     except:
         print("Error: Could not access file. Please provide the full file path...")
@@ -39,16 +51,28 @@ def md5_hash():
     
     try:
         filepath = input("Please enter the full path to your file: ")
-        
+        verified_md5 = input("\nPlease paste the verified hash included on the website of the downloaded file: ").lower()
+
         hasher = hashlib.md5()
         with open(filepath,"rb") as open_file:
             content = open_file.read()
             hasher.update(content)
         md5_output = hasher.hexdigest()
-        print("\n" + md5_output)
+        print("\nThe hash of the provided file is: " + md5_output.lower())
+
+        if verified_md5 == md5_output:
+            print("\nCongratulations, the hash of the file is legitimate.")
+        else:
+            print("\nThe hash of the file is not legitimate. Please take the necessary steps to dispose of this file as it may be malicious. ")
 
         # Close the file
         open_file.close()
+
+        # Return to main menu
+        time.sleep(2)
+        print("Returning to main menu...")
+        time.sleep(2)
+        hash_menu()
     
     except:
         print("Error: Could not access file. Please provide the full file path...")
@@ -59,7 +83,6 @@ def md5_hash():
     else:
         exit()
     
-
 while(True):
     hash_menu()
     user_choice = ""
