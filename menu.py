@@ -75,8 +75,11 @@ while(True):
             except:
                 print("Error: Could not access file. Please provide the full file path...")
 
-            # Restart function
-            sha_hash()
+                # Restart function
+                sha_hash()
+            
+            else:
+                exit()
 
         def md5_hash():
 
