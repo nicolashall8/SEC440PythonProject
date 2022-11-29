@@ -4,6 +4,8 @@ import getpass
 import hashlib
 import os
 import pyfiglet
+from datetime import date
+import time
 
 
 def menu():          
@@ -27,7 +29,7 @@ def file_scan():
     filepath = input("Please enter the directory to scan: ")
 
     scan = os.scandir(filepath)
-    baselinelist = []
+    scanlist = []
 
     for file in scan:
         filename = file.name
@@ -37,21 +39,42 @@ def file_scan():
         with open(filepath + "/" + filename,'rb') as file:
             hash = file.read()
             sha.update(hash)
-            baseline = sha.hexdigest()
-            baselinelist.append(baseline)
-
+            filehash = sha.hexdigest()
+            scanlist.append(filehash)
+            
         # Close file
         file.close()
     
-    # Testing to see if hashes from all files in the directory are put into baselinelist
-    print(baselinelist)
+    # Testing to see if hashes from all files in the directory are put into scanlist
+    print(scanlist)
     
-    # Creates local file with the hashes from the baselinelist. Need to work on putting each hash on a separate line.
-    # Will need to ask the user if they want to make a new baseline file. Otherwise a "new scan" file with the date and time should be created instead.
-    databasefile = open("filedatabase.txt", "w+")
-    for i in baselinelist:
-        databasefile.writelines([i])
-    databasefile.close()
+    filetype = input("Would you like to make this scan the baseline? Type yes or no: ")
+    filetype.lower()
+
+    # Obtains current date for file name scheme
+    mydate = str(date.today())
+
+    # If user enters yes, the baseline file is created in the current directory. Need to add option to choose directory to save to
+    if filetype == "yes":
+        print("[*] Creating new baseline file...")
+        time.sleep(2)
+        databasefile = open(mydate + "-baseline-scan" + ".txt", "w+")
+        for i in scanlist:
+            databasefile.writelines([i])
+        databasefile.close()
+
+    # If user enters no, a scan file is created in the current directory. Need to add option to choose directory to save file to
+    elif filetype == "no":
+        print("[*] Creating new scan file...")
+        time.sleep(2)
+        databasefile = open(mydate + "-scan" + ".txt", "w+")
+        for i in scanlist:
+            databasefile.writelines([i])
+        databasefile.close()
+    
+    # If user enters invalid option (example: integer)
+    else:
+        input("Error: Invalid input. Please type yes or no.\n\nPress Enter to return to the main menu.")
 
 
 def file_integrity_check():
