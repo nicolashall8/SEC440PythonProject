@@ -11,7 +11,7 @@ import time
 def menu():          
 
     # Format ASCII art
-    art = pyfiglet.Figlet(font='banner3-D')          
+    art = pyfiglet.Figlet(font='slant')          
     print(art.renderText("File Integrity Scanner"))
 
     menu_options = {
@@ -40,7 +40,7 @@ def file_scan():
             hash = file.read()
             sha.update(hash)
             filehash = sha.hexdigest()
-            scanlist.append(filehash)
+            scanlist.append("\n" + filename + " - " + filehash)
             
         # Close file
         file.close()
