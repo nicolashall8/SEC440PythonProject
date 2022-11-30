@@ -6,16 +6,16 @@ import os
 import pyfiglet
 from datetime import date
 import time
-
+import difflib
 
 def menu():          
 
-    # Format ASCII art
+    # ASCII art
     art = pyfiglet.Figlet(font='slant')          
     print(art.renderText("File Integrity Scanner"))
 
     menu_options = {
-        1: 'New File Integrity Scan',
+        1: 'New File Scan',
         2: 'File Integrity Check',
         3: 'SSH',
         4: 'Help',
@@ -40,25 +40,26 @@ def file_scan():
             hash = file.read()
             sha.update(hash)
             filehash = sha.hexdigest()
-            scanlist.append("\n" + filename + " - " + filehash)
+            scanlist.append("\n" + filename + ", " + filehash)
             
         # Close file
         file.close()
     
     # Testing to see if hashes from all files in the directory are put into scanlist
-    print(scanlist)
+    # print(scanlist)
     
     filetype = input("Would you like to make this scan the baseline? Type yes or no: ")
     filetype.lower()
 
     # Obtains current date for file name scheme
     mydate = str(date.today())
+    
 
     # If user enters yes, the baseline file is created in the current directory. Need to add option to choose directory to save to
     if filetype == "yes":
         print("[*] Creating new baseline file...")
         time.sleep(2)
-        databasefile = open(mydate + "-baseline-scan" + ".txt", "w+")
+        databasefile = open(mydate + "-baseline" + ".txt", "w+")
         for i in scanlist:
             databasefile.writelines([i])
         databasefile.close()
@@ -79,10 +80,63 @@ def file_scan():
 
 def file_integrity_check():
     """
-    Compares the hashes in the new scan file with the baseline file. Provides output on whether they're the same or changes
-    that were made to specific file(s).
+    Compares the content of the new scan and the baseline files. Outputs the difference of each. Gives user the option to
+    make the new scan the baseline. 
     """
-    print("")
+    try:
+        baselinefilepath = input("Please enter the full file path to your baseline file: ")
+
+        newscanfilepath = input("Please enter the full file path to your new scan file: ")
+    except:
+        print("Error: Invalid file path. Please try again. ")
+        time.sleep(2)
+        file_integrity_check()
+
+    print("[*] Comparing files...\n")
+    time.sleep(2)
+
+    f1=open(baselinefilepath, "r")
+    f2=open(newscanfilepath,"r")
+    i = 0
+    for line1 in f1:
+        i +=1
+
+        for line2 in f2:
+
+            if line1 == line2:
+                print("Line ", i, ": SAME")
+            else:
+                print("Line ", i, ":")
+                print("\tBaseline file:", line1, end="")
+                print("\tScan file:", line2, end="")
+            break
+
+    # Close files
+    f1.close()
+    f2.close()
+    
+    # Ask user if they would like to make the scan the new baseline 
+    newbaseline = input("\nWould you like to make this scan the new baseline? Type yes or no: ")
+    newbaseline.lower()
+
+    if newbaseline == "yes":
+        print("[*] Creating new baseline file...")
+        time.sleep(2)
+
+        # Get current date for file name scheme
+        mydate = str(date.today())
+
+        # Copies contents of new scan file into a new baseline file
+        with open(newscanfilepath,"r") as firstfile, open(mydate + "-new-baseline.txt", "a") as secondfile:
+            for line in firstfile:
+                secondfile.write(line)
+        # Close files
+        firstfile.close()
+        secondfile.close()
+
+    elif newbaseline == "no":
+        print("\nReturning to main menu...")
+        time.sleep(2)
 
 
 def ssh_paramiko():
