@@ -6,7 +6,6 @@ import os
 import pyfiglet
 from datetime import date
 import time
-import difflib
 
 def menu():          
 
@@ -60,6 +59,7 @@ def file_scan():
         print("[*] Creating new baseline file...")
         time.sleep(2)
         databasefile = open(mydate + "-baseline" + ".txt", "w+")
+        databasefile.writelines(filepath)
         for i in scanlist:
             databasefile.writelines([i])
         databasefile.close()
@@ -69,6 +69,7 @@ def file_scan():
         print("[*] Creating new scan file...")
         time.sleep(2)
         databasefile = open(mydate + "-scan" + ".txt", "w+")
+        databasefile.writelines(filepath)
         for i in scanlist:
             databasefile.writelines([i])
         databasefile.close()
@@ -95,6 +96,7 @@ def file_integrity_check():
     print("[*] Comparing files...\n")
     time.sleep(2)
 
+    # Compares baseline and scan files. 
     f1=open(baselinefilepath, "r")
     f2=open(newscanfilepath,"r")
     i = 0
@@ -102,7 +104,7 @@ def file_integrity_check():
         i +=1
 
         for line2 in f2:
-
+            # Output differences between each file line by line.
             if line1 == line2:
                 print("Line ", i, ": SAME")
             else:
@@ -141,7 +143,8 @@ def file_integrity_check():
 
 def ssh_paramiko():
     """
-    Provides the user with an interactive commandline via SSH on the remote endpoint
+    Provides the user with an interactive commandline via SSH on the remote endpoint. This option is currently just for 
+    testing.
     """
 
     # User provides full file path to known hosts file
