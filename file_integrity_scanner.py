@@ -1,11 +1,6 @@
-from paramiko import *
-import paramiko
-import getpass
-import hashlib
-import os
-import pyfiglet
+import paramiko, getpass, hashlib, os, pyfiglet, time
 from datetime import date
-import time
+from paramiko import *
 
 def menu():          
 
@@ -27,7 +22,16 @@ def menu():
 def file_scan():
     filepath = input("Please enter the directory to scan: ")
 
-    scan = os.scandir(filepath)
+    try:
+        scan = os.scandir(filepath)
+
+    except FileNotFoundError:
+        print("Error: Invalid file path. ")
+        time.sleep(1)
+
+        # Restart function
+        file_scan()
+
     scanlist = []
 
     for file in scan:
@@ -50,7 +54,7 @@ def file_scan():
     filetype = input("Would you like to make this scan the baseline? Type yes or no: ")
     filetype.lower()
 
-    # Obtains current date for file name scheme
+        # Obtains current date for file name scheme
     mydate = str(date.today())
     
 
