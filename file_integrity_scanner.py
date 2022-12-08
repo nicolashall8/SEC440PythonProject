@@ -1,4 +1,11 @@
-import paramiko, getpass, hashlib, os, pyfiglet, time
+"""
+File Integrity Scanner
+By: Nicolas Hall
+11/21/22
+Python 3.8.10
+"""
+
+import paramiko, getpass, hashlib, os, pyfiglet, time, socket
 from datetime import date
 from paramiko import *
 
@@ -38,12 +45,15 @@ def file_scan():
         filename = file.name
 
         sha = hashlib.sha256()
-
-        with open(filepath + "/" + filename,'rb') as file:
-            hash = file.read()
-            sha.update(hash)
-            filehash = sha.hexdigest()
-            scanlist.append("\n" + filename + ", " + filehash)
+        try:
+            with open(filepath + "/" + filename,'rb') as file:
+                hash = file.read()
+                sha.update(hash)
+                filehash = sha.hexdigest()
+                scanlist.append("\n" + filename + ", " + filehash)
+        
+        except PermissionError or IsADirectoryError:
+            continue
             
         # Close file
         file.close()
@@ -54,16 +64,19 @@ def file_scan():
     filetype = input("Would you like to make this scan the baseline? Type yes or no: ")
     filetype.lower()
 
-        # Obtains current date for file name scheme
+    # Obtains current date for output scan file naming scheme
     mydate = str(date.today())
-    
+
+    # Obtains hostname to include in output scan file
+    hostname = socket.gethostname()
 
     # If user enters yes, the baseline file is created in the current directory. Need to add option to choose directory to save to
     if filetype == "yes":
         print("[*] Creating new baseline file...")
         time.sleep(2)
         databasefile = open(mydate + "-baseline" + ".txt", "w+")
-        databasefile.writelines(filepath)
+        databasefile.writelines(hostname)
+        databasefile.writelines("\n" + filepath)
         for i in scanlist:
             databasefile.writelines([i])
         databasefile.close()
@@ -73,7 +86,8 @@ def file_scan():
         print("[*] Creating new scan file...")
         time.sleep(2)
         databasefile = open(mydate + "-scan" + ".txt", "w+")
-        databasefile.writelines(filepath)
+        databasefile.writelines(hostname)
+        databasefile.writelines("\n" + filepath)
         for i in scanlist:
             databasefile.writelines([i])
         databasefile.close()
